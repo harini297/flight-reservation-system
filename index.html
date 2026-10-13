@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SkyBook Flight Reservation</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #eaf2ff;
+            padding: 25px;
+        }
+        .box {
+            background: white;
+            max-width: 750px;
+            margin: auto;
+            padding: 25px;
+            border-radius: 12px;
+        }
+        h1 { color: #1554a3; text-align: center; }
+        label { display: block; margin-top: 12px; }
+        input, select {
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            margin-top: 5px;
+        }
+        button {
+            margin-top: 20px;
+            padding: 12px;
+            background: #1554a3;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        #result {
+            margin-top: 20px;
+            background: #e5f7eb;
+            padding: 15px;
+        }
+    </style>
+</head>
+<body>
+<div class="box">
+    <h1>✈ SkyBook</h1>
+    <h2>Flight Reservation System</h2>
+
+    <label>Trip Type</label>
+    <select id="trip" onchange="tripChange()">
+        <option>One Way</option>
+        <option>Round Trip</option>
+    </select>
+
+    <label>Flight Category</label>
+    <select id="category">
+        <option>Domestic</option>
+        <option>International</option>
+    </select>
+
+    <label>From</label>
+    <input id="from" placeholder="Enter departure city">
+
+    <label>To</label>
+    <input id="to" placeholder="Enter destination city">
+
+    <label>Departure Date</label>
+    <input type="date" id="departure">
+
+    <div id="returnBox" hidden>
+        <label>Return Date</label>
+        <input type="date" id="returnDate">
+    </div>
+
+    <label>Travelers</label>
+    <select id="travelers">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+    </select>
+
+    <label>Travel Class</label>
+    <select id="class">
+        <option>Economy</option>
+        <option>Premium Economy</option>
+        <option>Business</option>
+        <option>First Class</option>
+    </select>
+
+    <label>Fare Type</label>
+    <select id="fare">
+        <option>Regular</option>
+        <option>Student</option>
+        <option>Senior Citizen</option>
+        <option>Armed Forces</option>
+    </select>
+
+    <button onclick="searchFlight()">Search Flights</button>
+    <div id="result"></div>
+</div>
+
+<script>
+function tripChange() {
+    let trip = document.getElementById("trip").value;
+    document.getElementById("returnBox").hidden =
+        trip === "One Way";
+}
+
+function searchFlight() {
+    let from = document.getElementById("from").value.trim();
+    let to = document.getElementById("to").value.trim();
+    let date = document.getElementById("departure").value;
+    let trip = document.getElementById("trip").value;
+    let returnDate = document.getElementById("returnDate").value;
+
+    if (!from || !to || !date) {
+        alert("Please fill From, To and Departure Date.");
+        return;
+    }
+
+    if (from.toLowerCase() === to.toLowerCase()) {
+        alert("From and To must be different.");
+        return;
+    }
+
+    if (trip === "Round Trip" &&
+        (!returnDate || returnDate < date)) {
+        alert("Please select a valid return date.");
+        return;
+    }
+
+    let price = document.getElementById("category").value
+        === "Domestic" ? 3500 : 18000;
+
+    let travelClass = document.getElementById("class").value;
+    if (travelClass === "Premium Economy") price *= 1.5;
+    if (travelClass === "Business") price *= 3;
+    if (travelClass === "First Class") price *= 5;
+
+    if (document.getElementById("fare").value === "Student")
+        price *= 0.9;
+
+    if (trip === "Round Trip") price *= 2;
+
+    let count = Number(document.getElementById("travelers").value);
+    let total = Math.round(price * count);
+
+    document.getElementById("result").innerHTML =
+        "<h3>Flight Search Result</h3>" +
+        "<p>Route: " + from + " to " + to + "</p>" +
+        "<p>Trip: " + trip + "</p>" +
+        "<p>Departure: " + date + "</p>" +
+        (trip === "Round Trip" ?
+        "<p>Return: " + returnDate + "</p>" : "") +
+        "<p>Category: " +
+        document.getElementById("category").value + "</p>" +
+        "<p>Travelers: " + count + "</p>" +
+        "<p>Class: " + travelClass + "</p>" +
+        "<p>Fare Type: " +
+        document.getElementById("fare").value + "</p>" +
+        "<h3>Estimated Total: Rs. " + total + "</h3>" +
+        "<p>Demonstration only. This is not a real flight booking.</p>";
+}
+</script>
+</body>
+</html>
